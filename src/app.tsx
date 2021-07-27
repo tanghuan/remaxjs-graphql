@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { request } from 'remax/wechat';
 import {
   ApolloProvider,
@@ -7,14 +7,6 @@ import {
   HttpLink,
 } from '@apollo/client';
 import './app.css';
-
-class Response {
-  constructor(private body: any, private init?: any) {}
-
-  text() {
-    return Promise.resolve(JSON.stringify(this.body));
-  }
-}
 
 const httpLink = new HttpLink({
   uri: 'http://192.168.2.26:4000/graphql',
@@ -26,7 +18,11 @@ const httpLink = new HttpLink({
         header: options?.headers,
         data: options?.body,
         success(res) {
-          resolve(new Response(res.data));
+          resolve({
+            text() {
+              return Promise.resolve(JSON.stringify(res.data));
+            },
+          });
         },
         fail(error) {
           resolve(error);
